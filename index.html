@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RiskGen AI - Operational Risk Assessment</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Merriweather:wght@300;400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="theme-light">
+
+    <div id="app">
+
+        <!-- === VIEW: DASHBOARD === -->
+        <div id="view-dashboard" class="main-view active">
+            <header class="dashboard-header">
+                <div class="brand">
+                    <div class="logo-icon"><i class="fa-solid fa-shield-cat"></i></div>
+                    <h1>RiskGen <span class="badge-beta">AI Beta</span></h1>
+                </div>
+                <nav class="header-nav">
+                    <button class="nav-tab active" id="nav-projects" onclick="showDashboardTab('projects')">
+                        <i class="fa-solid fa-folder-open"></i> Projects
+                    </button>
+                    <button class="nav-tab" id="nav-knowledge" onclick="showDashboardTab('knowledge')">
+                        <i class="fa-solid fa-book"></i> Knowledge Base
+                    </button>
+                </nav>
+                <div class="user-controls">
+                    <button class="icon-btn theme-toggle"><i class="fa-regular fa-moon"></i></button>
+                    <div class="avatar">AU</div>
+                </div>
+            </header>
+
+            <div class="dashboard-content">
+                <!-- Projects Tab Content -->
+                <div id="tab-projects" class="dashboard-tab active">
+                    <div class="hero-section">
+                        <h2>Welcome to AI-Powered Risk Management</h2>
+                        <p>Create detailed operational risk assessments in minutes with customized LLM prompts.</p>
+                    </div>
+
+                    <div class="projects-grid-header">
+                        <h3>My Projects</h3>
+                        <button class="btn primary-btn" id="btn-create-project">
+                            <i class="fa-solid fa-plus"></i> New Project
+                        </button>
+                    </div>
+
+                    <div id="project-list" class="projects-grid">
+                        <!-- Project Cards Injected Here -->
+                    </div>
+                </div>
+
+                <!-- Knowledge Base Tab Content -->
+                <div id="tab-knowledge" class="dashboard-tab hidden">
+                    <div class="kb-header">
+                        <div class="kb-intro">
+                            <h2><i class="fa-solid fa-book-open"></i> Historical Cases Knowledge Base</h2>
+                            <p>Manage completed operational risk assessment papers. These documents power AI-driven case
+                                matching for new project assessments.</p>
+                        </div>
+                        <button class="btn primary-btn" id="btn-upload-case">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> Upload Case Paper
+                        </button>
+                    </div>
+
+                    <!-- Search and Filters -->
+                    <div class="kb-toolbar">
+                        <div class="search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="kb-search" placeholder="Search cases by name, tags, industry...">
+                        </div>
+                        <div class="filter-dropdowns">
+                            <select id="filter-industry">
+                                <option value="">All Industries</option>
+                            </select>
+                            <select id="filter-type">
+                                <option value="">All Project Types</option>
+                            </select>
+                            <select id="filter-status">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="archived">Archived</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Stats Summary -->
+                    <div class="kb-stats">
+                        <div class="stat-card">
+                            <span class="stat-num" id="stat-total">0</span>
+                            <span class="stat-label">Total Cases</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-num" id="stat-active">0</span>
+                            <span class="stat-label">Active</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-num" id="stat-risks">0</span>
+                            <span class="stat-label">Risks Documented</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-num" id="stat-industries">0</span>
+                            <span class="stat-label">Industries Covered</span>
+                        </div>
+                    </div>
+
+                    <!-- Documents Grid -->
+                    <div id="kb-documents-grid" class="kb-grid">
+                        <!-- Case cards injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- === VIEW: PROJECT WORKSPACE === -->
+        <div id="view-workspace" class="main-view hidden">
+
+            <!-- Sidebar Navigation -->
+            <nav class="sidebar">
+                <div class="sidebar-header">
+                    <button class="btn text-btn nav-back" id="btn-back-dashboard">
+                        <i class="fa-solid fa-chevron-left"></i> Dashboard
+                    </button>
+                    <div class="project-title-display" id="ws-project-name">Project Name</div>
+                </div>
+
+                <ul class="ws-nav-links">
+                    <li class="active" data-tab="tab-input">
+                        <i class="fa-solid fa-pen-to-square"></i> Input & Docs
+                    </li>
+                    <li data-tab="tab-prompt">
+                        <i class="fa-solid fa-robot"></i> Prompt Studio
+                    </li>
+                    <li data-tab="tab-generate">
+                        <i class="fa-solid fa-bolt"></i> Generation
+                    </li>
+                    <li data-tab="tab-report">
+                        <i class="fa-solid fa-file-contract"></i> Risk Report
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Workspace Content -->
+            <main class="ws-content">
+
+                <!-- TAB 1: INPUT & DOCS -->
+                <section id="tab-input" class="tab-pane active">
+                    <div class="pane-header">
+                        <h2>Project Information</h2>
+                        <p>Manually enter details or upload documents to auto-extract context.</p>
+                    </div>
+
+                    <div class="input-layout">
+                        <!-- Left: Form -->
+                        <div class="form-container">
+                            <form id="project-form">
+                                <div class="form-group">
+                                    <label>Project Name</label>
+                                    <input type="text" id="inp-projectName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Background & Purpose</label>
+                                    <textarea id="inp-background" rows="5" required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Operational Flow (Current & New)</label>
+                                    <textarea id="inp-flow" rows="5" required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Dify Workflow API Endpoint (Optional)</label>
+                                    <input type="text" id="inp-api" placeholder="https://api.dify.ai/v1/workflows/...">
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn secondary-btn">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Right: Document Upload -->
+                        <div class="upload-container">
+                            <div class="drop-zone" id="doc-drop-zone">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                <h3>Upload Project Docs</h3>
+                                <p>Drag & drop PDF/Word/MD files here</p>
+                                <button class="btn sm-btn">Browse Files</button>
+                            </div>
+                            <div id="uploaded-files-list" class="file-list">
+                                <!-- File items -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 2: PROMPT STUDIO -->
+                <section id="tab-prompt" class="tab-pane">
+                    <div class="pane-header">
+                        <h2>Prompt Studio</h2>
+                        <p>Customize the LLM System Prompt. These modules are combined with the Context (Module 2) and
+                            Output Format (Module 5) at runtime.</p>
+                    </div>
+
+                    <div class="prompt-editor-layout">
+                        <div class="prompt-sidebar">
+                            <button class="prompt-nav-btn active" data-module="1">
+                                <span>1</span> Role & Context
+                            </button>
+                            <button class="prompt-nav-btn" data-module="3">
+                                <span>3</span> Guidelines & Standards
+                            </button>
+                            <button class="prompt-nav-btn" data-module="4">
+                                <span>4</span> Instructions
+                            </button>
+                        </div>
+
+                        <div class="editor-area">
+                            <div class="editor-toolbar">
+                                <span id="current-module-label">Module 1: Role & Context</span>
+                                <button class="btn sm-btn" id="btn-reset-prompt">Reset to Default</button>
+                            </div>
+                            <textarea id="prompt-editor-textarea" class="code-editor" spellcheck="false"></textarea>
+                            <div class="editor-footer">
+                                <button class="btn primary-btn" id="btn-save-prompt">Save Module</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 3: GENERATION - REDESIGNED -->
+                <section id="tab-generate" class="tab-pane generation-page">
+                    <div class="generation-layout">
+                        <!-- Left Panel: Risk Papers List -->
+                        <aside class="papers-sidebar">
+                            <div class="papers-header">
+                                <h3><i class="fa-solid fa-file-lines"></i> Risk Papers</h3>
+                            </div>
+                            <div id="papers-list" class="papers-list">
+                                <!-- Dynamically populated -->
+                                <div class="empty-papers">
+                                    <i class="fa-regular fa-folder-open"></i>
+                                    <p>No papers yet</p>
+                                </div>
+                            </div>
+                        </aside>
+
+                        <!-- Right Panel: Generation Workflow -->
+                        <div class="generation-main">
+                            <!-- Create New Paper Header -->
+                            <div class="generation-header">
+                                <div class="paper-input-group">
+                                    <label for="paper-name-input">
+                                        <i class="fa-solid fa-file-signature"></i> Create New Risk Paper
+                                    </label>
+                                    <div class="input-with-button">
+                                        <input type="text" id="paper-name-input"
+                                            placeholder="e.g., GenAI Chatbot Assessment v1.0">
+                                        <button id="btn-start-generation" class="btn primary-btn">
+                                            <i class="fa-solid fa-bolt"></i> Generate
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Workflow Steps -->
+                            <div class="workflow-container">
+                                <!-- Step 1: Assembling Prompts -->
+                                <div class="workflow-step" id="step-prompts" data-status="pending">
+                                    <div class="step-header">
+                                        <div class="step-indicator">
+                                            <span class="step-number">1</span>
+                                            <i class="fa-solid fa-check step-check"></i>
+                                            <i class="fa-solid fa-spinner fa-spin step-spinner"></i>
+                                        </div>
+                                        <div class="step-info">
+                                            <h4>Assembling Prompts</h4>
+                                            <p class="step-desc">Fetching prompt modules from Prompt Studio</p>
+                                        </div>
+                                        <div class="step-status">
+                                            <span class="status-badge pending">Pending</span>
+                                        </div>
+                                        <button class="step-toggle" onclick="toggleStepData('prompts')">
+                                            <i class="fa-solid fa-chevron-down"></i>
+                                        </button>
+                                    </div>
+                                    <div class="step-data" id="step-data-prompts">
+                                        <div class="data-preview">
+                                            <div class="data-item">
+                                                <span class="data-label">Module 1: Role & Context</span>
+                                                <pre class="data-value" id="captured-module1">--</pre>
+                                            </div>
+                                            <div class="data-item">
+                                                <span class="data-label">Module 3: Guidelines</span>
+                                                <pre class="data-value" id="captured-module3">--</pre>
+                                            </div>
+                                            <div class="data-item">
+                                                <span class="data-label">Module 4: Instructions</span>
+                                                <pre class="data-value" id="captured-module4">--</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Step 2: Fetching User Inputs -->
+                                <div class="workflow-step" id="step-inputs" data-status="pending">
+                                    <div class="step-header">
+                                        <div class="step-indicator">
+                                            <span class="step-number">2</span>
+                                            <i class="fa-solid fa-check step-check"></i>
+                                            <i class="fa-solid fa-spinner fa-spin step-spinner"></i>
+                                        </div>
+                                        <div class="step-info">
+                                            <h4>Fetching User Inputs</h4>
+                                            <p class="step-desc">Collecting project information from Input Data tab</p>
+                                        </div>
+                                        <div class="step-status">
+                                            <span class="status-badge pending">Pending</span>
+                                        </div>
+                                        <button class="step-toggle" onclick="toggleStepData('inputs')">
+                                            <i class="fa-solid fa-chevron-down"></i>
+                                        </button>
+                                    </div>
+                                    <div class="step-data" id="step-data-inputs">
+                                        <div class="data-preview">
+                                            <div class="data-item">
+                                                <span class="data-label">Project Background</span>
+                                                <pre class="data-value" id="captured-background">--</pre>
+                                            </div>
+                                            <div class="data-item">
+                                                <span class="data-label">Operational Flow</span>
+                                                <pre class="data-value" id="captured-flow">--</pre>
+                                            </div>
+                                            <div class="data-item">
+                                                <span class="data-label">API Endpoint</span>
+                                                <pre class="data-value" id="captured-api">--</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Step 3: Retrieving Historical Cases (NEW) -->
+                                <div class="workflow-step" id="step-retrieval" data-status="pending">
+                                    <div class="step-header">
+                                        <div class="step-indicator">
+                                            <span class="step-number">3</span>
+                                            <i class="fa-solid fa-check step-check"></i>
+                                            <i class="fa-solid fa-spinner fa-spin step-spinner"></i>
+                                        </div>
+                                        <div class="step-info">
+                                            <h4>Retrieving Historical Cases</h4>
+                                            <p class="step-desc">Finding relevant past assessments for few-shot learning
+                                            </p>
+                                        </div>
+                                        <div class="step-status">
+                                            <span class="status-badge pending">Pending</span>
+                                        </div>
+                                        <button class="step-toggle" onclick="toggleStepData('retrieval')">
+                                            <i class="fa-solid fa-chevron-down"></i>
+                                        </button>
+                                    </div>
+                                    <div class="step-data" id="step-data-retrieval">
+                                        <div class="data-preview">
+                                            <div class="data-item">
+                                                <span class="data-label">Retrieved Examples</span>
+                                                <div id="captured-cases" class="captured-cases-list">
+                                                    <!-- Dynamically populated -->
+                                                    <em style="color:var(--text-secondary);font-size:0.8rem;">Waiting
+                                                        for retrieval...</em>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Step 4: Generating Risk Analysis -->
+                                <div class="workflow-step" id="step-analysis" data-status="pending">
+                                    <div class="step-header">
+                                        <div class="step-indicator">
+                                            <span class="step-number">4</span>
+                                            <i class="fa-solid fa-check step-check"></i>
+                                            <i class="fa-solid fa-spinner fa-spin step-spinner"></i>
+                                        </div>
+                                        <div class="step-info">
+                                            <h4>Generating Risk Analysis</h4>
+                                            <p class="step-desc">Analyzing each risk category with LLM</p>
+                                        </div>
+                                        <div class="step-status">
+                                            <span class="status-badge pending">Pending</span>
+                                        </div>
+                                        <button class="step-toggle" onclick="toggleStepData('analysis')">
+                                            <i class="fa-solid fa-chevron-down"></i>
+                                        </button>
+                                    </div>
+                                    <div class="step-data" id="step-data-analysis">
+                                        <div class="analysis-progress">
+                                            <div class="progress-info">
+                                                <span id="analysis-current-cat">Waiting to start...</span>
+                                                <span id="analysis-progress-text">0 / 0</span>
+                                            </div>
+                                            <div class="progress-bar-track">
+                                                <div class="progress-bar-fill" id="analysis-progress-bar"></div>
+                                            </div>
+                                            <div class="analysis-log" id="analysis-log">
+                                                <!-- Log entries -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Completion Message -->
+                            <div id="generation-complete" class="generation-complete hidden">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <h3>Risk Paper Generated Successfully!</h3>
+                                <p>Click the paper in the left panel to view the full report.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 4: RISK REPORT - REDESIGNED -->
+                <section id="tab-report" class="tab-pane report-page">
+                    <!-- Report Layout with Papers Sidebar + Navigation + Main -->
+                    <div class="report-layout">
+                        <!-- Far Left: Papers List Sidebar -->
+                        <aside class="report-papers-sidebar">
+                            <div class="papers-header">
+                                <h4><i class="fa-solid fa-file-lines"></i> Risk Papers</h4>
+                            </div>
+                            <div id="report-papers-list" class="papers-list">
+                                <!-- Dynamically populated -->
+                                <div class="empty-papers">
+                                    <i class="fa-regular fa-folder-open"></i>
+                                    <p>No papers yet</p>
+                                </div>
+                            </div>
+                        </aside>
+
+                        <!-- Left: Quick Navigation Sidebar -->
+                        <aside class="report-nav-sidebar">
+                            <div class="nav-sidebar-header">
+                                <h4><i class="fa-solid fa-compass"></i> Quick Navigation</h4>
+                            </div>
+                            <div id="report-nav-list" class="nav-list">
+                                <!-- Dynamically populated -->
+                            </div>
+                            <div class="nav-sidebar-footer">
+                                <div class="progress-summary">
+                                    <div class="progress-ring">
+                                        <span id="nav-progress-pct">0%</span>
+                                    </div>
+                                    <div class="progress-text">
+                                        <span id="nav-progress-label">Completed</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </aside>
+
+                        <!-- Right: Main Content Area -->
+                        <div class="report-main">
+                            <!-- Enhanced Toolbar -->
+                            <div class="report-toolbar-v2">
+                                <div class="toolbar-left">
+                                    <div class="search-inline">
+                                        <i class="fa-solid fa-search"></i>
+                                        <input type="text" id="risk-search" placeholder="Search risks...">
+                                    </div>
+                                </div>
+                                <div class="toolbar-center">
+                                    <div class="filter-pills">
+                                        <select id="filter-category" class="filter-select">
+                                            <option value="">All Categories</option>
+                                        </select>
+                                        <select id="filter-rating" class="filter-select">
+                                            <option value="">All Ratings</option>
+                                            <option value="Critical">Critical</option>
+                                            <option value="High">High</option>
+                                            <option value="Medium">Medium</option>
+                                            <option value="Low">Low</option>
+                                        </select>
+                                        <select id="filter-status" class="filter-select">
+                                            <option value="">All Status</option>
+                                            <option value="draft">Draft</option>
+                                            <option value="review">In Review</option>
+                                            <option value="final">Finalized</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="toolbar-right">
+                                    <button class="btn icon-text-btn" id="btn-collapse-all" title="Collapse All">
+                                        <i class="fa-solid fa-compress-alt"></i>
+                                    </button>
+                                    <button class="btn icon-text-btn" id="btn-expand-all" title="Expand All">
+                                        <i class="fa-solid fa-expand-alt"></i>
+                                    </button>
+                                    <div class="toolbar-divider"></div>
+                                    <button class="btn secondary-btn" id="btn-download-report">
+                                        <i class="fa-solid fa-download"></i> Download
+                                    </button>
+                                    <button class="btn primary-btn" id="btn-email-report">
+                                        <i class="fa-solid fa-envelope"></i> Send to Email
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Stats Bar -->
+                            <div class="report-stats-bar">
+                                <div class="stat-pill">
+                                    <span class="stat-value" id="stat-total-risks">0</span>
+                                    <span class="stat-name">Total</span>
+                                </div>
+                                <div class="stat-pill critical">
+                                    <span class="stat-value" id="stat-critical">0</span>
+                                    <span class="stat-name">Critical</span>
+                                </div>
+                                <div class="stat-pill high">
+                                    <span class="stat-value" id="stat-high">0</span>
+                                    <span class="stat-name">High</span>
+                                </div>
+                                <div class="stat-pill medium">
+                                    <span class="stat-value" id="stat-medium">0</span>
+                                    <span class="stat-name">Medium</span>
+                                </div>
+                                <div class="stat-pill low">
+                                    <span class="stat-value" id="stat-low">0</span>
+                                    <span class="stat-name">Low</span>
+                                </div>
+                                <div class="stat-pill na">
+                                    <span class="stat-value" id="stat-na">0</span>
+                                    <span class="stat-name">N/A</span>
+                                </div>
+                            </div>
+
+                            <!-- Risk Cards Container -->
+                            <div id="risk-report-container" class="risk-report-container">
+                                <!-- Risk cards grouped by category rendered here -->
+                                <div class="empty-state">
+                                    <i class="fa-regular fa-clipboard"></i>
+                                    <p>No assessment generated yet. Run the analysis to populate this report.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Floating Action Button -->
+                    <button class="fab-add" id="btn-add-risk" title="Add New Risk">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </section>
+
+            </main>
+        </div>
+
+        <!-- Modals -->
+        <div id="modal-new-project" class="modal-overlay hidden">
+            <div class="modal-card">
+                <h3>New Project</h3>
+                <input type="text" id="new-project-name" placeholder="Enter Project Name">
+                <div class="modal-actions">
+                    <button class="btn text-btn" id="btn-cancel-new">Cancel</button>
+                    <button class="btn primary-btn" id="btn-confirm-new">Create</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case Detail Modal -->
+        <div id="modal-case-detail" class="modal-overlay hidden">
+            <div class="modal-card modal-lg">
+                <div class="modal-header">
+                    <h3 id="case-detail-title">Case Details</h3>
+                    <button class="modal-close" onclick="closeCaseModal()">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div id="case-detail-content" class="case-detail-body">
+                    <!-- Dynamic content injected here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Case Modal -->
+        <div id="modal-upload-case" class="modal-overlay hidden">
+            <div class="modal-card">
+                <h3><i class="fa-solid fa-cloud-arrow-up"></i> Upload Case Paper</h3>
+                <p class="modal-desc">Upload a completed operational risk assessment document. The system will parse and
+                    extract metadata for retrieval.</p>
+                <div class="upload-area" id="case-drop-zone">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    <span>Drag & drop PDF file here or click to browse</span>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn text-btn" onclick="closeUploadModal()">Cancel</button>
+                    <button class="btn primary-btn" id="btn-process-upload" disabled>Process Document</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Data Files (loaded as regular scripts for global access) -->
+    <script src="js/knowledge_data.js"></script>
+    <script src="js/demo_data.js"></script>
+    <!-- ☝️ 要更新展示的数据，只需要修改 js/demo_data.js 文件 -->
+    
+    <!-- Main Application (ES6 Modules) -->
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>

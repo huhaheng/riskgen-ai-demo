@@ -1,0 +1,51 @@
+# ============================================
+# RiskGen AI - Git Ignore 配置
+# ============================================
+
+# 业务文档（不上传）
+docs/
+
+# 备份文件
+*.backup
+*.bak
+*.old
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 编辑器文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 临时文件
+*.tmp
+*.temp
+*.log
+
+# Node.js (如果将来添加)
+node_modules/
+package-lock.json
+npm-debug.log*
+
+# Python (如果将来添加)
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.venv/
+venv/
+
+# 测试文件
+test.html
+*.test.js
+coverage/
+
+# 构建输出（如果将来添加构建流程）
+dist/
+build/
+
