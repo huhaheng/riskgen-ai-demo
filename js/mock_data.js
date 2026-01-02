@@ -5,91 +5,102 @@
 
 var BACKEND_DATA_JSON = [
     {
-        "is_applicable": "true",
-        "non_applicable_reason": null,
-        "risk_details": {
-            "consequences": [
-                "Use of outdated, incomplete or inaccurate EB and claims-related data in chatbot responses or lead reports, leading to incorrect guidance to members and potential financial detriment or disputes (e.g., benefit coverage arguments, mis-selling complaints).",
-                "Non-compliance with internal data retention / deletion standards or regulatory expectations on data minimisation and purpose limitation (especially around DM consent and lead data), potentially resulting in regulatory findings, fines and mandated remediation."
-            ],
-            "inherent_risk_rating": "High",
-            "mitigating_actions": [
-                {
-                    "description": "Define and document an end-to-end data lifecycle for GenAI Chatbot and GenAI Hub (capture, storage, usage, sharing, archival, deletion) for all relevant datasets: member identifiers, chat logs, DM consent, interest level indicators, and lead export files. Align with enterprise data retention schedule and regulatory requirements for medical insurance and marketing data.",
-                    "owner": "Data Governance Lead / CS Business Data Owner",
-                    "target_completion_date": "Prior to Launch"
-                }
-            ],
-            "risk_title": "Inadequate Governance of Member and Policy Data Across GenAI Chatbot Data Lifecycle",
-            "stakeholder_comments": [
-                {
-                    "justification": "From a business perspective, data is central to the value proposition of the GenAI Chatbot (accurate EB responses and qualified leads). Without robust lifecycle management, there is a risk of outdated benefits content and over-retention or misuse of member and lead data, which could create disputes and regulatory exposure. The proposed controls (formal lifecycle definition, clear ownership, and automated retention) are adequate and pragmatic. Some residual risk remains due to complexity of multiple systems (AIA+, GenAI Hub, Agency) and the evolving nature of AI use cases, so Medium residual risk is acceptable with ongoing monitoring.",
-                    "rating": "Medium",
-                    "role": "Risk Owner"
-                },
-                {
-                    "justification": "The use of chat logs, DM consent, and lead profiling data across their lifecycle raises obligations under data protection and consumer laws (e.g., purpose limitation, retention proportionality, data subject rights, and clear consent documentation). With documented lifecycle rules, ownership, and retention, and with mechanisms to action consent withdrawal and data deletion across all downstream systems, the main legal risks can be mitigated. Residual risk remains due to potential gaps between documented processes and actual technical implementation, and the possibility of outdated benefit content being used in disputes. Hence a Medium rating is appropriate.",
-                    "rating": "Medium",
-                    "role": "Legal"
-                },
-                {
-                    "justification": "Data lifecycle failures can lead directly to regulatory breaches (e.g., storing DM/marketing data longer than allowed, using data for marketing after consent withdrawal, or reliance on outdated benefit/claims information). The proposed controls embed policy alignment, audit trails, and periodic monitoring, which should reduce the likelihood of systemic non-compliance. However, given the volume of members, the automation of consent capture, and the involvement of multiple business units and systems, some residual conduct and regulatory risk remains. Therefore, residual risk is assessed as Medium rather than Low.",
-                    "rating": "Medium",
-                    "role": "Compliance"
-                }
-            ],
-            "triggers": [
-                "Member and interaction data (chat logs, DM consent records, interest level indicators) are captured and stored in GenAI Hub / AIA+ systems without full alignment to enterprise data lifecycle standards (classification, retention, deletion, and purpose limitation).",
-                "Knowledge ingestion process for EB documents (benefit summaries, member guides, schedules) does not consistently enforce ownership, version control, approval, or decommissioning rules, leading to outdated or inaccurate content being available to the GenAI Chatbot."
-            ]
-        }
+      "is_applicable": "true",
+      "level1_risk_type": "Data Risk",
+      "level2_3_risk_category": "Data Life-Cycle Risk",
+      "non_applicable_reason": null,
+      "risk_details": {
+        "consequences": [
+          "Members’ enquiries are answered based on outdated or incorrect benefits/policy data, leading to incorrect decisions by members (e.g., treatment choice, provider choice) and potential financial / compensation claims against the company."
+        ],
+        "inherent_risk_rating": "High",
+        "mitigating_actions": [
+          {
+            "description": "Define and document end‑to‑end data lifecycle governance for GenAI Chatbot and GenAI Hub",
+            "owner": "Data Governance Lead / CS Business Data Owner",
+            "target_completion_date": "Prior to Launch"
+          },
+          {
+            "description": "Implement technical and procedural controls to enforce data quality, version control, and lifecycle management of knowledge documents (benefit summary, member guide, surgical schedule), including: (i) mandatory validity/expiry metadata, (ii) periodic review schedule, (iii) formal decommissioning process, and (iv) audit trail for changes and releases across Staging and PROD GenAI Hub.",
+            "owner": "CS Content Controller / CS Release Manager / TDA Data Scientist Lead",
+            "target_completion_date": "Prior to Launch"
+          },
+          {
+            "description": "Establish a controlled process and system logic to ensure DM consent status and revocation are consistently synchronized and applied across AIA+",
+            "owner": "Project Manager / IT Lead (AIA+ & GenAI Hub) / CS Business Team",
+            "target_completion_date": "Prior to Launch + 1 month"
+          }
+        ],
+        "risk_title": "Inadequate governance of member and policy data across GenAI Chatbot life cycle (capture, use, retention, and lead generation)",
+        "stakeholder_comments": [
+          {
+            "justification": "From a business perspective, the data lifecycle risk is material because the GenAI Chatbot will be a primary self‑service channel and a feeder of leads to Agency.",
+            "rating": "Medium",
+            "role": "Risk Owner"
+          },
+          {
+            "justification": "The main concerns are unlawful processing of personal data for direct marketing and use of outdated policy/benefit information that could lead to misrepresentation claims.",
+            "rating": "Medium",
+            "role": "Legal"
+          },
+          {
+            "justification": "Compliance focuses on ensuring that the capture, use, and retention of customer data and DM consent comply with data protection, direct marketing, and conduct requirements.",
+            "rating": "Medium",
+            "role": "Compliance"
+          }
+        ],
+        "triggers": [
+          "Inconsistent or unclear data ownership and stewardship across AIA+, GenAI Hub Portal, and GenAI Chatbot (e.g., no single accountable owner for chat logs, DM consent flags, and interest-level indicators) leading to ad-hoc practices."
+        ]
+      }
     },
     {
-        "is_applicable": "true",
-        "non_applicable_reason": null,
-        "risk_details": {
-            "consequences": [
-                "Members receive incorrect benefits / claim‑related information (coverage, remaining limit, shortfall, visit balance) from the GenAI Chatbot, leading to poor decisions on medical treatment or claim behaviour, complaints and potential disputes/claims against the company",
-                "Improper use of personal data for direct marketing (e.g. contacting members or dependents without valid DM consent, or beyond stated purpose/scope) resulting in breaches of data protection / direct marketing regulations, investigations, fines and mandatory remediation exercises"
-            ],
-            "inherent_risk_rating": "High",
-            "mitigating_actions": [
-                {
-                    "description": "Implement formal data quality controls and governance for knowledge ingestion (standard and general knowledge), including checklists for completeness/accuracy, version control against source-of-truth systems, and mandatory dual review/approval (CS Content Controller and Release Manager) before deployment to PROD GenAI Hub.",
-                    "owner": "CS Release Manager",
-                    "target_completion_date": "Prior to Launch"
-                },
-                {
-                    "description": "Design and implement end-to-end DM consent capture, storage and usage controls: (i) standardize wording and UI with existing AIA+ DM consent framework, (ii) ensure consent flag and timestamp are written to the designated master system, (iii) enforce technical checks so lead generation logic and export can only include members with valid, current DM consent, and (iv) log consent source and history for audit trail.",
-                    "owner": "Digital Product Owner / Data Governance Lead",
-                    "target_completion_date": "Prior to Launch"
-                }
-            ],
-            "risk_title": "Inaccurate or Improper Use of Member and Consent Data for GenAI Chatbot Servicing and Lead Generation",
-            "stakeholder_comments": [
-                {
-                    "justification": "The GenAI Chatbot and lead‑generation features rely heavily on accurate EB data, DM consent records and interest‑level scoring. Without controls, the likelihood of errors and misuse would be high and could damage client and member trust. The proposed controls (strong knowledge‑ingestion governance, consent management aligned with existing AIA+ practice, and validated interest‑scoring rules) reduce the likelihood of material issues to a manageable level. Some residual risk remains due to model evolution and the scale of data, but it is acceptable given the business benefits.",
-                    "rating": "Medium",
-                    "role": "Risk Owner"
-                },
-                {
-                    "justification": "The inherent risk is high because end‑to‑end data capture and usage (knowledge ingestion, consent, profiling, lead export) spans multiple systems and teams. The proposed mitigating actions introduce clear ownership, documented procedures, dual controls, and periodic testing that are aligned with the enterprise data risk framework. These controls make the risk observable and testable and bring the residual risk down to medium. Continued RCSA updates, control testing and incident/near‑miss capture will be important to ensure the controls remain effective as the chatbot scales.",
-                    "rating": "Medium",
-                    "role": "Op Risk Management"
-                },
-                {
-                    "justification": "From an information security perspective, the key concern is that inaccurate or improperly governed data might lead to over‑exposure or misuse of member data. However, the described solution relies on existing secure AIA+ authentication, GenAI Hub as a controlled internal knowledge repository, and Azure OpenAI with group‑approved configurations. The proposed actions focus on data quality and consent enforcement rather than core CIA weaknesses. No significant additional confidentiality, integrity or availability risk beyond existing enterprise controls has been identified; hence residual risk is low from LIS’s lens, assuming standard access control, logging and encryption remain in place.",
-                    "rating": "Low",
-                    "role": "LIS"
-                }
-            ],
-            "triggers": [
-                "Incorrect, incomplete or outdated ingestion of EB policy documents (benefit summaries, member guides, surgical schedules) into GenAI Hub Knowledge Base leading to wrong coverage/claim information being surfaced by the chatbot",
-                "Defects or gaps in DM consent capture and logging (e.g. UI/wording inconsistency with corporate standard, consent flag not stored or mapped correctly to downstream systems/GenAI Hub) causing use of member data for marketing without valid consent or failure to use it when consent exists"
-            ]
-        }
+      "is_applicable": "true",
+      "level1_risk_type": "Data Risk",
+      "level2_3_risk_category": "Data Capture, Maintenance and Use",
+      "non_applicable_reason": null,
+      "risk_details": {
+        "consequences": [
+          "Members receive inaccurate benefit and claim-related information, or marketing contact is initiated based on wrong or outdated data, leading to customer complaints, remediation costs and potential financial loss from service recovery and rework."
+        ],
+        "inherent_risk_rating": "High",
+        "mitigating_actions": [
+          {
+            "description": "Define and implement a formal Data Quality and Governance Framework for GenAI Chatbot and GenAI Hub (including data dictionaries, data lineage, ownership, validation rules for AIA+ user ID, conversation ID, timestamps, interest indicators, and consent flags).",
+            "owner": "Data Governance Lead / CS Business Analyst",
+            "target_completion_date": "Prior to Launch"
+          },
+          {
+            "description": "Implement automated and manual data quality controls for knowledge ingestion and maintenance (e.g., version control of benefit summaries and member guides, anomaly detection thresholds, reconciliation of latest approved policy documents, periodic review cycle).",
+            "owner": "CS Content Controller / TDA Data Scientist",
+            "target_completion_date": "Prior to Launch and Ongoing Quarterly"
+          },
+          {
+            "description": "Design and embed periodic reconciliation and monitoring for DM consent and lead generation data (e.g., sampling of leads vs. source chat logs and consent records, validation of hot/warm/cold logic, exception reporting and remediation procedures).",
+            "owner": "CS Business Team Lead / Project Manager",
+            "target_completion_date": "Post-Launch + 1 month and Ongoing Monthly"
+          }
+        ],
+        "risk_title": "Inaccurate or Poorly Governed Use of Member and Interaction Data in GenAI Chatbot, DM Consent Capture, and Lead Generation",
+        "stakeholder_comments": [
+          {
+            "justification": "The GenAI Chatbot, DM consent capture and lead generation processes rely heavily on accurate capture and maintenance of interaction, consent and knowledge data. Without controls, the potential customer and regulatory impact could be material, hence the inherent rating is High.",
+            "rating": "Medium",
+            "role": "Risk Owner"
+          },
+          {
+            "justification": "From a legal standpoint, the main concern is that inaccurate or poorly governed data (e.g., incorrect consent flags, outdated benefit information) could lead to breaches of data protection and direct marketing laws, or give rise to misrepresentation or reliance claims.",
+            "rating": "Medium",
+            "role": "Legal"
+          }
+        ],
+        "triggers": [
+          "Incorrect or incomplete capture of member interaction data (e.g., AIA+ user ID, conversation ID, timestamp, interest indicator) from the GenAI Chatbot or GenAI Hub, leading to corrupted or mismatched records.",
+          "Data quality or governance gaps in knowledge ingestion (e.g., outdated benefit summaries, member guides, or surgical schedules) resulting in the GenAI Chatbot using obsolete or inaccurate information for responses and subsequent analytics."
+        ]
+      }
     }
-];
+  ];
 
 const DEFAULT_PROMPT_MODULES = {
     module1: `# MODULE 1: ROLE AND CONTEXT

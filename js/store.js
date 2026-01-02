@@ -16,6 +16,7 @@ export class Store {
         this.projects = JSON.parse(localStorage.getItem(STORAGE_KEYS.PROJECTS)) || [];
         this.papers = JSON.parse(localStorage.getItem(STORAGE_KEYS.PAPERS)) || [];
         this.currentProjectId = null;
+        this.settings = JSON.parse(localStorage.getItem(STORAGE_KEYS.SETTINGS)) || {};
     }
 
     // =========================================================================
@@ -42,8 +43,7 @@ export class Store {
             // 输入数据
             inputs: {
                 background: '',
-                flow: '',
-                apiEndpoint: ''
+                flow: ''
             },
             // 自定义 Prompts（初始值为默认模板）
             prompts: { ...DEFAULT_PROMPT_MODULES },
@@ -147,6 +147,37 @@ export class Store {
     }
 
     // =========================================================================
+    // SETTINGS MANAGEMENT - 设置管理
+    // =========================================================================
+
+    /**
+     * 保存设置到 localStorage
+     * @param {Object} settings - 设置对象
+     */
+    saveSettings(settings) {
+        this.settings = { ...this.settings, ...settings };
+        localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(this.settings));
+    }
+
+    /**
+     * 获取设置
+     * @returns {Object} - 设置对象
+     */
+    getSettings() {
+        return this.settings || {};
+    }
+
+    /**
+     * 获取特定设置项
+     * @param {string} key - 设置键名
+     * @param {*} defaultValue - 默认值
+     * @returns {*} - 设置值
+     */
+    getSetting(key, defaultValue = '') {
+        return this.settings?.[key] || defaultValue;
+    }
+
+    // =========================================================================
     // UTILITY METHODS - 工具方法
     // =========================================================================
 
@@ -156,9 +187,11 @@ export class Store {
     clearAll() {
         this.projects = [];
         this.papers = [];
+        this.settings = {};
         this.currentProjectId = null;
         localStorage.removeItem(STORAGE_KEYS.PROJECTS);
         localStorage.removeItem(STORAGE_KEYS.PAPERS);
+        localStorage.removeItem(STORAGE_KEYS.SETTINGS);
     }
 
     /**
@@ -169,6 +202,7 @@ export class Store {
         return {
             projects: this.projects,
             papers: this.papers,
+            settings: this.settings,
             exportDate: new Date().toISOString()
         };
     }
@@ -185,6 +219,10 @@ export class Store {
         if (data.papers) {
             this.papers = data.papers;
             this.savePapers();
+        }
+        if (data.settings) {
+            this.settings = data.settings;
+            this.saveSettings(this.settings);
         }
     }
 }

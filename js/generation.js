@@ -121,7 +121,9 @@ function displayPaperSteps(paper) {
     if (paper.capturedData?.userInputs) {
         setTextContent('captured-background', truncate(paper.capturedData.userInputs.background, 200));
         setTextContent('captured-flow', truncate(paper.capturedData.userInputs.flow, 200));
-        setTextContent('captured-api', paper.capturedData.userInputs.apiEndpoint || '--');
+        // API Endpoint 现在从全局设置读取
+        const apiEndpoint = store.getSetting('apiEndpoint', '');
+        setTextContent('captured-api', apiEndpoint || '--');
     }
 
     // Step 3: Historical Cases

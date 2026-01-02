@@ -38,6 +38,9 @@
                     <button class="nav-tab" id="nav-knowledge" onclick="showDashboardTab('knowledge')">
                         <i class="fa-solid fa-book"></i> Knowledge Base
                     </button>
+                    <button class="nav-tab" id="nav-settings" onclick="showDashboardTab('settings')">
+                        <i class="fa-solid fa-gear"></i> Settings
+                    </button>
                 </nav>
                 <div class="user-controls">
                     <button class="icon-btn theme-toggle"><i class="fa-regular fa-moon"></i></button>
@@ -124,6 +127,51 @@
                         <!-- Case cards injected here -->
                     </div>
                 </div>
+
+                <!-- Settings Tab Content -->
+                <div id="tab-settings" class="dashboard-tab hidden">
+                    <div class="settings-header">
+                        <div class="settings-intro">
+                            <h2><i class="fa-solid fa-gear"></i> Settings</h2>
+                            <p>Configure application settings and API endpoints.</p>
+                        </div>
+                    </div>
+
+                    <div class="settings-container">
+                        <!-- API Configuration Section -->
+                        <div class="settings-section">
+                            <div class="settings-section-header">
+                                <h3><i class="fa-solid fa-plug"></i> API Configuration</h3>
+                                <p class="settings-section-desc">Configure external API endpoints used by the application.</p>
+                            </div>
+                            <div class="settings-section-content">
+                                <form id="settings-form">
+                                    <div class="form-group">
+                                        <label for="settings-api-endpoint">
+                                            Dify Workflow API Endpoint
+                                            <span class="label-hint">(Optional)</span>
+                                        </label>
+                                        <input type="text" 
+                                               id="settings-api-endpoint" 
+                                               name="apiEndpoint"
+                                               placeholder="https://api.dify.ai/v1/workflows/..."
+                                               class="settings-input">
+                                        <small class="form-hint">
+                                            Enter the Dify workflow API endpoint URL. This will be used for all projects.
+                                        </small>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn primary-btn">
+                                            <i class="fa-solid fa-floppy-disk"></i> Save Settings
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Other Settings Sections can be added here -->
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -180,10 +228,6 @@
                                 <div class="form-group">
                                     <label>Operational Flow (Current & New)</label>
                                     <textarea id="inp-flow" rows="5" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label>Dify Workflow API Endpoint (Optional)</label>
-                                    <input type="text" id="inp-api" placeholder="https://api.dify.ai/v1/workflows/...">
                                 </div>
                                 <div class="form-actions">
                                     <button type="submit" class="btn secondary-btn">Save Changes</button>
@@ -453,6 +497,11 @@
                         <aside class="report-nav-sidebar">
                             <div class="nav-sidebar-header">
                                 <h4><i class="fa-solid fa-compass"></i> Quick Navigation</h4>
+                                <div class="nav-search-box">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                    <input type="text" id="nav-search-input" placeholder="Filter risks..." 
+                                           onkeyup="filterNavigation(this.value)">
+                                </div>
                             </div>
                             <div id="report-nav-list" class="nav-list">
                                 <!-- Dynamically populated -->
@@ -604,6 +653,64 @@
                 <div class="modal-actions">
                     <button class="btn text-btn" onclick="closeUploadModal()">Cancel</button>
                     <button class="btn primary-btn" id="btn-process-upload" disabled>Process Document</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SME Comment Modal -->
+        <div id="modal-sme-comment" class="modal-overlay hidden">
+            <div class="modal-card modal-lg">
+                <div class="modal-header">
+                    <h3><i class="fa-solid fa-comment-dots"></i> Add SME Review Comment</h3>
+                    <button class="modal-close" onclick="closeSMECommentModal()">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="sme-comment-form">
+                        <div class="form-group">
+                            <label for="sme-comment-role">SME Role <span class="required">*</span></label>
+                            <select id="sme-comment-role" required>
+                                <option value="">Select SME Role</option>
+                                <option value="Risk Owner">Risk Owner</option>
+                                <option value="Legal">Legal</option>
+                                <option value="Compliance">Compliance</option>
+                                <option value="Op Risk Management">Op Risk Management</option>
+                                <option value="LIS">LIS</option>
+                                <option value="Tech Risk">Tech Risk</option>
+                                <option value="AI Governance">AI Governance</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="sme-comment-ir-rating">Inherent Risk (IR) Rating</label>
+                            <select id="sme-comment-ir-rating">
+                                <option value="">Select Rating</option>
+                                <option value="Critical">Critical</option>
+                                <option value="High">High</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="sme-comment-rr-rating">Residual Risk (RR) Rating</label>
+                            <select id="sme-comment-rr-rating">
+                                <option value="">Select Rating</option>
+                                <option value="Critical">Critical</option>
+                                <option value="High">High</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="sme-comment-justification">Justification / Comments</label>
+                            <textarea id="sme-comment-justification" rows="5" 
+                                placeholder="Provide rationale for your risk rating assessment..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn text-btn" onclick="closeSMECommentModal()">Cancel</button>
+                    <button class="btn primary-btn" id="btn-submit-sme-comment">Submit Comment</button>
                 </div>
             </div>
         </div>

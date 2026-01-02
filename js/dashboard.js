@@ -7,6 +7,7 @@
 
 import { store } from './store.js';
 import { formatDate } from './utils.js';
+import { initSettings, showSettingsTab, hideSettingsTab } from './settings.js';
 
 // DOM 元素引用
 let projectListEl;
@@ -17,8 +18,10 @@ let btnConfirmNew;
 let btnCancelNew;
 let navProjects;
 let navKnowledge;
+let navSettings;
 let tabProjects;
 let tabKnowledge;
+let tabSettings;
 
 /**
  * 初始化 Dashboard
@@ -35,11 +38,16 @@ export function initDashboard() {
     btnCancelNew = document.getElementById('btn-cancel-new');
     navProjects = document.getElementById('nav-projects');
     navKnowledge = document.getElementById('nav-knowledge');
+    navSettings = document.getElementById('nav-settings');
     tabProjects = document.getElementById('tab-projects');
     tabKnowledge = document.getElementById('tab-knowledge');
+    tabSettings = document.getElementById('tab-settings');
 
     // 绑定事件
     bindDashboardEvents();
+
+    // 初始化 Settings
+    initSettings();
 
     // 初始渲染
     renderProjectList();
@@ -74,6 +82,7 @@ function bindDashboardEvents() {
     // Tab 切换
     if (navProjects) navProjects.onclick = () => showDashboardTab('projects');
     if (navKnowledge) navKnowledge.onclick = () => showDashboardTab('knowledge');
+    if (navSettings) navSettings.onclick = () => showDashboardTab('settings');
 }
 
 /**
@@ -145,7 +154,7 @@ function handleCreateProject() {
 
 /**
  * 切换 Dashboard 标签页
- * @param {string} tabName - 标签页名称 ('projects' 或 'knowledge')
+ * @param {string} tabName - 标签页名称 ('projects', 'knowledge', 或 'settings')
  */
 export function showDashboardTab(tabName) {
     console.log('🔄 Switching Dashboard Tab:', tabName);
@@ -156,6 +165,9 @@ export function showDashboardTab(tabName) {
     }
     if (navKnowledge) {
         navKnowledge.classList.toggle('active', tabName === 'knowledge');
+    }
+    if (navSettings) {
+        navSettings.classList.toggle('active', tabName === 'settings');
     }
 
     // 更新标签页显示/隐藏
@@ -181,6 +193,14 @@ export function showDashboardTab(tabName) {
         } else {
             tabKnowledge.classList.remove('active');
             tabKnowledge.classList.add('hidden');
+        }
+    }
+
+    if (tabSettings) {
+        if (tabName === 'settings') {
+            showSettingsTab();
+        } else {
+            hideSettingsTab();
         }
     }
 }

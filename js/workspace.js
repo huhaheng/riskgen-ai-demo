@@ -18,7 +18,6 @@ let tabPanes;
 let inpProjectName;
 let inpBackground;
 let inpFlow;
-let inpApi;
 let formProject;
 let promptNavBtns;
 let promptEditorTextarea;
@@ -42,7 +41,6 @@ export function initWorkspaceEvents() {
     inpProjectName = document.getElementById('inp-projectName');
     inpBackground = document.getElementById('inp-background');
     inpFlow = document.getElementById('inp-flow');
-    inpApi = document.getElementById('inp-api');
     formProject = document.getElementById('project-form');
     promptNavBtns = document.querySelectorAll('.prompt-nav-btn');
     promptEditorTextarea = document.getElementById('prompt-editor-textarea');
@@ -110,7 +108,6 @@ export function loadWorkspace(project) {
     if (inpProjectName) inpProjectName.value = project.name;
     if (inpBackground) inpBackground.value = project.inputs.background || '';
     if (inpFlow) inpFlow.value = project.inputs.flow || '';
-    if (inpApi) inpApi.value = project.inputs.apiEndpoint || '';
 
     // 3. 加载 Prompt 编辑器
     loadPromptEditor(project, 'module1');
@@ -160,8 +157,7 @@ function handleFormSubmit(e) {
         name: inpProjectName.value,
         inputs: {
             background: inpBackground.value,
-            flow: inpFlow.value,
-            apiEndpoint: inpApi.value
+            flow: inpFlow.value
         }
     });
 

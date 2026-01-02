@@ -133,6 +133,7 @@ export const RISK_STATUSES = {
  */
 export const STORAGE_KEYS = {
     PROJECTS: 'riskgen_projects',
-    PAPERS: 'riskgen_papers'
+    PAPERS: 'riskgen_papers',
+    SETTINGS: 'riskgen_settings'
 };
 

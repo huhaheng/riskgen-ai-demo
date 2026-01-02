@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试分组功能</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #2563EB;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 0.85rem;
+        }
+        button {
+            background: #2563EB;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 0.5rem;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+        .error {
+            color: #dc2626;
+            background: #fee2e2;
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+        .success {
+            color: #16a34a;
+            background: #dcfce7;
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 分组功能测试工具</h1>
+    
+    <div class="test-section">
+        <h3>1. 检查 LocalStorage 数据</h3>
+        <button onclick="checkLocalStorage()">检查数据</button>
+        <div id="storage-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>2. 检查 Demo 数据</h3>
+        <button onclick="checkDemoData()">检查 Demo 数据</button>
+        <div id="demo-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>3. 清除所有 Papers 数据</h3>
+        <button onclick="clearPapers()" style="background: #dc2626;">清除 Papers</button>
+        <div id="clear-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>4. 模拟创建 Paper（测试分组）</h3>
+        <button onclick="testGrouping()">测试分组逻辑</button>
+        <div id="grouping-result"></div>
+    </div>
+
+    <script>
+        // 加载 demo_data.js
+        const script = document.createElement('script');
+        script.src = '../js/demo_data.js';
+        document.head.appendChild(script);
+
+        script.onload = function() {
+            console.log('✅ Demo data script loaded');
+        };
+
+        function checkLocalStorage() {
+            const result = document.getElementById('storage-result');
+            try {
+                const papers = JSON.parse(localStorage.getItem('riskgen_papers') || '[]');
+                const projects = JSON.parse(localStorage.getItem('riskgen_projects') || '[]');
+                
+                result.innerHTML = `
+                    <div class="success">
+                        <strong>✅ LocalStorage 数据：</strong><br>
+                        Papers: ${papers.length} 个<br>
+                        Projects: ${projects.length} 个
+                    </div>
+                    <pre>${JSON.stringify(papers, null, 2)}</pre>
+                `;
+
+                if (papers.length > 0) {
+                    const firstPaper = papers[0];
+                    const hasNewFields = firstPaper.results?.some(r => 
+                        r.level1_risk_type && r.level2_3_risk_category
+                    );
+                    
+                    if (!hasNewFields) {
+                        result.innerHTML += `
+                            <div class="error">
+                                <strong>❌ 问题：</strong>Paper 数据缺少新字段 (level1_risk_type, level2_3_risk_category)
+                            </div>
+                        `;
+                    } else {
+                        result.innerHTML += `
+                            <div class="success">
+                                <strong>✅ 数据包含新字段</strong>
+                            </div>
+                        `;
+                    }
+                }
+            } catch (e) {
+                result.innerHTML = `<div class="error">错误: ${e.message}</div>`;
+            }
+        }
+
+        function checkDemoData() {
+            const result = document.getElementById('demo-result');
+            try {
+                if (typeof BACKEND_DATA_JSON === 'undefined') {
+                    result.innerHTML = '<div class="error">❌ BACKEND_DATA_JSON 未定义，请刷新页面重试</div>';
+                    return;
+                }
+
+                const hasNewFields = BACKEND_DATA_JSON.some(r => 
+                    r.level1_risk_type && r.level2_3_risk_category
+                );
+
+                result.innerHTML = `
+                    <div class="success">
+                        <strong>✅ Demo 数据：</strong>${BACKEND_DATA_JSON.length} 个风险<br>
+                        <strong>包含新字段：</strong>${hasNewFields ? '是' : '否'}
+                    </div>
+                    <pre>${JSON.stringify(BACKEND_DATA_JSON, null, 2)}</pre>
+                `;
+
+                if (!hasNewFields) {
+                    result.innerHTML += `
+                        <div class="error">
+                            <strong>❌ 问题：</strong>Demo 数据缺少新字段，请检查 js/demo_data.js
+                        </div>
+                    `;
+                }
+            } catch (e) {
+                result.innerHTML = `<div class="error">错误: ${e.message}</div>`;
+            }
+        }
+
+        function clearPapers() {
+            const result = document.getElementById('clear-result');
+            try {
+                localStorage.removeItem('riskgen_papers');
+                result.innerHTML = '<div class="success">✅ Papers 数据已清除！请刷新主页面查看效果。</div>';
+            } catch (e) {
+                result.innerHTML = `<div class="error">错误: ${e.message}</div>`;
+            }
+        }
+
+        function testGrouping() {
+            const result = document.getElementById('grouping-result');
+            try {
+                if (typeof BACKEND_DATA_JSON === 'undefined') {
+                    result.innerHTML = '<div class="error">❌ BACKEND_DATA_JSON 未定义</div>';
+                    return;
+                }
+
+                // 模拟分组逻辑
+                const level1Groups = {};
+                BACKEND_DATA_JSON.forEach((d, i) => {
+                    const l1 = d.level1_risk_type || 'Other';
+                    const l2 = d.level2_3_risk_category || 'Uncategorized';
+                    
+                    if (!level1Groups[l1]) {
+                        level1Groups[l1] = {};
+                    }
+                    if (!level1Groups[l1][l2]) {
+                        level1Groups[l1][l2] = [];
+                    }
+                    level1Groups[l1][l2].push({ id: i, ...d });
+                });
+
+                result.innerHTML = `
+                    <div class="success">
+                        <strong>✅ 分组测试成功！</strong>
+                    </div>
+                    <pre>${JSON.stringify(level1Groups, null, 2)}</pre>
+                `;
+            } catch (e) {
+                result.innerHTML = `<div class="error">错误: ${e.message}</div>`;
+            }
+        }
+
+        // 页面加载时自动检查
+        window.onload = function() {
+            setTimeout(() => {
+                checkLocalStorage();
+                checkDemoData();
+            }, 500);
+        };
+    </script>
+</body>
+</html>
+
