@@ -70,61 +70,359 @@
 
                 <!-- Knowledge Base Tab Content -->
                 <div id="tab-knowledge" class="dashboard-tab hidden">
-                    <div class="kb-header">
-                        <div class="kb-intro">
-                            <h2><i class="fa-solid fa-book-open"></i> Historical Cases Knowledge Base</h2>
-                            <p>Manage completed operational risk assessment papers. These documents power AI-driven case
-                                matching for new project assessments.</p>
-                        </div>
-                        <button class="btn primary-btn" id="btn-upload-case">
-                            <i class="fa-solid fa-cloud-arrow-up"></i> Upload Case Paper
+                    <!-- View Switcher -->
+                    <div class="kb-view-switcher">
+                        <button class="kb-view-btn active" data-view="cases" id="kb-view-cases">
+                            <i class="fa-solid fa-list"></i> By Case
+                        </button>
+                        <button class="kb-view-btn" data-view="taxonomy" id="kb-view-taxonomy">
+                            <i class="fa-solid fa-diagram-project"></i> By Risk Taxonomy
                         </button>
                     </div>
-
-                    <!-- Search and Filters -->
-                    <div class="kb-toolbar">
-                        <div class="search-box">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                            <input type="text" id="kb-search" placeholder="Search cases by name, tags, industry...">
+                    
+                    <!-- Case View (Default) -->
+                    <div class="kb-view-content active" id="kb-view-content-cases">
+                        <!-- Master-Detail Layout -->
+                        <div class="kb-master-detail">
+                            <!-- Left: Case List Panel -->
+                            <div class="kb-list-panel">
+                                <div class="kb-list-header">
+                                    <div class="kb-title-row">
+                                        <h2><i class="fa-solid fa-book-open"></i> Knowledge Base</h2>
+                                        <button class="btn primary-btn btn-sm" id="btn-upload-case">
+                                            <i class="fa-solid fa-plus"></i> Upload
+                                        </button>
+                                    </div>
+                                    <p class="kb-subtitle">Historical operational risk assessment papers for AI context</p>
+                                </div>
+                            
+                            <!-- Search -->
+                            <div class="kb-search-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="kb-search" placeholder="Search cases...">
+                            </div>
+                            
+                            <!-- Filters -->
+                            <div class="kb-filters">
+                                <select id="filter-business-unit">
+                                    <option value="">All Business Units</option>
+                                </select>
+                                <select id="filter-case-type">
+                                    <option value="">All Case Types</option>
+                                </select>
+                                <select id="filter-risk-level">
+                                    <option value="">All Risk Levels</option>
+                                    <option value="Critical">Critical</option>
+                                    <option value="High">High</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Low">Low</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Stats Bar -->
+                            <div class="kb-stats-bar">
+                                <div class="kb-stat-item">
+                                    <span class="kb-stat-num" id="stat-total-cases">0</span>
+                                    <span class="kb-stat-label">Cases</span>
+                                </div>
+                                <div class="kb-stat-item critical">
+                                    <span class="kb-stat-num" id="stat-critical-risks">0</span>
+                                    <span class="kb-stat-label">Critical</span>
+                                </div>
+                                <div class="kb-stat-item high">
+                                    <span class="kb-stat-num" id="stat-high-risks">0</span>
+                                    <span class="kb-stat-label">High</span>
+                                </div>
+                                <div class="kb-stat-item medium">
+                                    <span class="kb-stat-num" id="stat-medium-risks">0</span>
+                                    <span class="kb-stat-label">Medium</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Case List -->
+                            <div id="kb-case-list" class="kb-case-list">
+                                <!-- Case items injected here -->
+                            </div>
                         </div>
-                        <div class="filter-dropdowns">
-                            <select id="filter-industry">
-                                <option value="">All Industries</option>
-                            </select>
-                            <select id="filter-type">
-                                <option value="">All Project Types</option>
-                            </select>
-                            <select id="filter-status">
-                                <option value="">All Status</option>
-                                <option value="active">Active</option>
-                                <option value="archived">Archived</option>
-                            </select>
+                        
+                        <!-- Right: Case Detail Panel -->
+                        <div class="kb-detail-panel" id="kb-detail-panel">
+                            <div class="kb-detail-empty">
+                                <i class="fa-solid fa-folder-open"></i>
+                                <h3>Select a Case</h3>
+                                <p>Choose a case from the list to view detailed risk assessment information</p>
+                            </div>
+                            
+                            <!-- Detail Content (hidden initially) -->
+                            <div class="kb-detail-content hidden" id="kb-detail-content">
+                                <!-- Header -->
+                                <div class="kb-detail-header">
+                                    <div class="kb-detail-title-section">
+                                        <span class="kb-case-id" id="detail-case-id">CASE-2024-001</span>
+                                        <h2 id="detail-case-title">Case Title</h2>
+                                        <div class="kb-detail-meta">
+                                            <span class="kb-meta-tag type" id="detail-case-type">
+                                                <i class="fa-solid fa-tag"></i> AI/ML Implementation
+                                            </span>
+                                            <span class="kb-meta-tag unit" id="detail-business-unit">
+                                                <i class="fa-solid fa-building"></i> Customer Service
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="kb-detail-actions">
+                                        <button class="btn icon-btn" title="Copy Case ID" onclick="copyCaseId()">
+                                            <i class="fa-solid fa-copy"></i>
+                                        </button>
+                                        <button class="btn icon-btn" title="Export as JSON" onclick="exportCaseJson()">
+                                            <i class="fa-solid fa-download"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Tabs -->
+                                <div class="kb-detail-tabs">
+                                    <button class="kb-tab-btn active" data-tab="overview">
+                                        <i class="fa-solid fa-eye"></i> Overview
+                                    </button>
+                                    <button class="kb-tab-btn" data-tab="profile">
+                                        <i class="fa-solid fa-briefcase"></i> Project Profile
+                                    </button>
+                                    <button class="kb-tab-btn" data-tab="risks">
+                                        <i class="fa-solid fa-shield-halved"></i> Risk Assessment
+                                    </button>
+                                    <button class="kb-tab-btn" data-tab="tags">
+                                        <i class="fa-solid fa-tags"></i> Tags & Related
+                                    </button>
+                                </div>
+                                
+                                <!-- Tab Content -->
+                                <div class="kb-tab-content">
+                                    <!-- Overview Tab -->
+                                    <div class="kb-tab-pane active" id="tab-overview">
+                                        <div class="kb-overview-grid">
+                                            <div class="kb-overview-card summary">
+                                                <h4><i class="fa-solid fa-quote-left"></i> Project Summary</h4>
+                                                <p id="detail-summary">Loading...</p>
+                                            </div>
+                                            <div class="kb-overview-card objectives">
+                                                <h4><i class="fa-solid fa-bullseye"></i> Core Objectives</h4>
+                                                <ul id="detail-objectives"></ul>
+                                            </div>
+                                            <div class="kb-risk-matrix-card">
+                                                <h4><i class="fa-solid fa-chart-pie"></i> Risk Overview</h4>
+                                                <div class="kb-risk-matrix" id="detail-risk-matrix">
+                                                    <!-- Risk level bars -->
+                                                </div>
+                                            </div>
+                                            <div class="kb-keywords-card">
+                                                <h4><i class="fa-solid fa-key"></i> Key Themes</h4>
+                                                <div class="kb-keyword-groups">
+                                                    <div class="kb-keyword-group">
+                                                        <label>Business</label>
+                                                        <div class="kb-keywords" id="detail-keywords-business"></div>
+                                                    </div>
+                                                    <div class="kb-keyword-group">
+                                                        <label>Technology</label>
+                                                        <div class="kb-keywords" id="detail-keywords-tech"></div>
+                                                    </div>
+                                                    <div class="kb-keyword-group">
+                                                        <label>Regulatory</label>
+                                                        <div class="kb-keywords" id="detail-keywords-regulatory"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Project Profile Tab -->
+                                    <div class="kb-tab-pane" id="tab-profile">
+                                        <div class="kb-profile-sections">
+                                            <!-- Background & Purpose -->
+                                            <div class="kb-section-card">
+                                                <div class="kb-section-header">
+                                                    <h4><i class="fa-solid fa-file-lines"></i> Background & Purpose</h4>
+                                                </div>
+                                                <div class="kb-section-content">
+                                                    <div class="kb-info-grid" id="detail-background">
+                                                        <!-- Dynamically populated -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Operational Flow -->
+                                            <div class="kb-section-card">
+                                                <div class="kb-section-header">
+                                                    <h4><i class="fa-solid fa-route"></i> Operational Flow</h4>
+                                                </div>
+                                                <div class="kb-section-content">
+                                                    <div class="kb-flow-comparison">
+                                                        <div class="kb-flow-column existing">
+                                                            <h5><i class="fa-solid fa-clock-rotate-left"></i> Existing Flow</h5>
+                                                            <p id="detail-existing-flow-desc"></p>
+                                                            <ol id="detail-existing-flow-steps" class="kb-flow-steps"></ol>
+                                                        </div>
+                                                        <div class="kb-flow-arrow">
+                                                            <i class="fa-solid fa-arrow-right"></i>
+                                                        </div>
+                                                        <div class="kb-flow-column new">
+                                                            <h5><i class="fa-solid fa-rocket"></i> New Flow</h5>
+                                                            <p id="detail-new-flow-desc"></p>
+                                                            <ol id="detail-new-flow-steps" class="kb-flow-steps"></ol>
+                                                        </div>
+                                                    </div>
+                                                    <div class="kb-flow-impact">
+                                                        <h5><i class="fa-solid fa-bolt"></i> Process Impact</h5>
+                                                        <p id="detail-flow-impact"></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Risk Assessment Tab -->
+                                    <div class="kb-tab-pane" id="tab-risks">
+                                        <div class="kb-risk-sections">
+                                            <!-- Risk Summary Table -->
+                                            <div class="kb-section-card">
+                                                <div class="kb-section-header">
+                                                    <h4><i class="fa-solid fa-table"></i> Risk Summary</h4>
+                                                </div>
+                                                <div class="kb-section-content">
+                                                    <div class="kb-risk-table-wrapper">
+                                                        <table class="kb-risk-table" id="detail-risk-table">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Risk ID</th>
+                                                                    <th>Risk Name</th>
+                                                                    <th>Owner</th>
+                                                                    <th>Inherent</th>
+                                                                    <th>Taxonomy</th>
+                                                                    <th>Conduct Risk</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <!-- Dynamically populated -->
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Key Drivers -->
+                                            <div class="kb-section-card">
+                                                <div class="kb-section-header">
+                                                    <h4><i class="fa-solid fa-magnifying-glass-chart"></i> Key Drivers for Residual Risk</h4>
+                                                </div>
+                                                <div class="kb-section-content">
+                                                    <div class="kb-drivers-list" id="detail-key-drivers">
+                                                        <!-- Dynamically populated -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Detailed Risk Scenarios -->
+                                            <div class="kb-section-card">
+                                                <div class="kb-section-header">
+                                                    <h4><i class="fa-solid fa-list-check"></i> Detailed Risk Scenarios</h4>
+                                                </div>
+                                                <div class="kb-section-content">
+                                                    <div class="kb-scenarios-list" id="detail-risk-scenarios">
+                                                        <!-- Dynamically populated -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tags & Related Tab -->
+                                    <div class="kb-tab-pane" id="tab-tags">
+                                        <div class="kb-tags-sections">
+                                            <div class="kb-section-card">
+                                                <div class="kb-section-header">
+                                                    <h4><i class="fa-solid fa-tag"></i> Classification Tags</h4>
+                                                </div>
+                                                <div class="kb-section-content">
+                                                    <div class="kb-tags-grid" id="detail-all-tags">
+                                                        <!-- Dynamically populated -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="kb-section-card">
+                                                <div class="kb-section-header">
+                                                    <h4><i class="fa-solid fa-link"></i> Similar Cases</h4>
+                                                </div>
+                                                <div class="kb-section-content">
+                                                    <div class="kb-similar-cases" id="detail-similar-cases">
+                                                        <!-- Dynamically populated -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                    <!-- Stats Summary -->
-                    <div class="kb-stats">
-                        <div class="stat-card">
-                            <span class="stat-num" id="stat-total">0</span>
-                            <span class="stat-label">Total Cases</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-num" id="stat-active">0</span>
-                            <span class="stat-label">Active</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-num" id="stat-risks">0</span>
-                            <span class="stat-label">Risks Documented</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-num" id="stat-industries">0</span>
-                            <span class="stat-label">Industries Covered</span>
-                        </div>
                     </div>
-
-                    <!-- Documents Grid -->
-                    <div id="kb-documents-grid" class="kb-grid">
-                        <!-- Case cards injected here -->
+                    
+                    <!-- Risk Taxonomy View -->
+                    <div class="kb-view-content" id="kb-view-content-taxonomy">
+                        <div class="kb-taxonomy-container">
+                            <!-- Left: Risk Taxonomy Selector -->
+                            <div class="kb-taxonomy-selector">
+                                <div class="kb-taxonomy-header">
+                                    <h2><i class="fa-solid fa-diagram-project"></i> Risk Taxonomy</h2>
+                                    <p class="kb-subtitle">Search cases by risk category</p>
+                                </div>
+                                
+                                <div class="kb-taxonomy-filters">
+                                    <div class="kb-taxonomy-filter-group">
+                                        <label for="taxonomy-level1">
+                                            <i class="fa-solid fa-layer-group"></i> Level 1 Risk Type
+                                        </label>
+                                        <select id="taxonomy-level1">
+                                            <option value="">Select Level 1 Risk Type</option>
+                                        </select>
+                                        <p class="kb-filter-description" id="taxonomy-level1-desc"></p>
+                                    </div>
+                                    
+                                    <div class="kb-taxonomy-filter-group">
+                                        <label for="taxonomy-level2-3">
+                                            <i class="fa-solid fa-sitemap"></i> Level 2/3 Category
+                                        </label>
+                                        <select id="taxonomy-level2-3">
+                                            <option value="">Select Level 2/3 Category</option>
+                                        </select>
+                                        <p class="kb-filter-description" id="taxonomy-level2-3-desc"></p>
+                                    </div>
+                                    
+                                    <button class="btn primary-btn" id="btn-search-taxonomy">
+                                        <i class="fa-solid fa-search"></i> Search Cases
+                                    </button>
+                                </div>
+                                
+                                <div class="kb-taxonomy-stats" id="taxonomy-search-results-count">
+                                    <!-- Search results count will be displayed here -->
+                                </div>
+                            </div>
+                            
+                            <!-- Right: Search Results -->
+                            <div class="kb-taxonomy-results">
+                                <div class="kb-taxonomy-results-header">
+                                    <h3>Matching Cases</h3>
+                                    <p>Cases that contain the selected risk category</p>
+                                </div>
+                                
+                                <div id="kb-taxonomy-case-results" class="kb-taxonomy-case-results">
+                                    <div class="kb-taxonomy-empty">
+                                        <i class="fa-solid fa-filter"></i>
+                                        <h3>Select Risk Category</h3>
+                                        <p>Choose a Level 1 Risk Type and Level 2/3 Category to search for matching cases</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -718,6 +1016,7 @@
     </div>
 
     <!-- Data Files (loaded as regular scripts for global access) -->
+    <script src="js/risk_taxonomy_data.js"></script>
     <script src="js/knowledge_data.js"></script>
     <script src="js/demo_data.js"></script>
     <!-- ☝️ 要更新展示的数据，只需要修改 js/demo_data.js 文件 -->
